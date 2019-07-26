@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+        stages {
+            stage('No-op') {
+                steps('No-op') {
+                    sh 'ls'
+                }
+            }
+        }
+        post {
+            always {
+                echo 'One way or another, I have finished'
+                deleteDir() /* clean up our workspace */
+            }
+            success {
+                slackSend channel: '#ops-room',
+                color: 'good',
+                message: "The pipeline ${currentBuild.fullDisplayName} completed successfully."
+            }
+            unstable {
+                echo 'I am unstable :/'
+            }
+            /* send e-mail notification on failure */
+            failure {
+                mail to: 'team@example.com',
+                subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+                body: "Something is wrong with ${env.BUILD_URL}"
+            }
+            changed {
+                echo 'Things were different before...'
+            }
+       }
+}
