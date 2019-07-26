@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+    options {
+        skipStagesAfterUnstable()
+    }
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing'
+            }
+        }
+        if (currentBuild.currentResult == 'SUCCESS') {
+            stage('Deploy') {
+                steps {
+                    echo 'Deploying'
+                }
+            }
+        }
+    } 
+}
